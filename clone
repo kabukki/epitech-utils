@@ -1,0 +1,22 @@
+#!/bin/bash
+
+EPITECH_USERNAME='le-rou_c'
+GITHUB_USERNAME='kabukki'
+
+if [[ $# == 0 ]]; then
+    echo 'Usage: clone [user] repository'
+    exit 1
+elif [[ $# == 2 ]]; then
+    local user=$1; shift
+fi
+
+# TODO: check if dir already exists
+[[ $# == 1 ]] \
+  && {
+    echo -n 'Cloning from Epitech   '
+    git clone git@git.epitech.eu:/${user:-EPITECH_USERNAME}/$1 2>/dev/null && echo '(success)'
+} || {
+    echo '(failure)'
+    echo -n 'Cloning from Github    '
+    git clone git@github.com:${user:-GITHUB_USERNAME}/$1 2>/dev/null && echo '(success)'
+} || echo '(failure)'
