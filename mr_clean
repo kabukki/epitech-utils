@@ -1,0 +1,50 @@
+#!/bin/bash
+
+TARGETS=('*~' '#*#')
+CMD='find *'
+VERBOSE=
+
+usage() {
+    cat << EOF
+USAGE
+	mr_clean [options]
+DESCRIPTION
+	mr_clean performs a clean of the current directory by removing temporary files
+	options		options among the following:
+	  -o		switch to also delete .o files
+	  -v		verbose switch to print the command
+EOF
+}
+
+f_mr_clean() {
+    CMD+=" \( -name '${TARGETS[0]}'"
+    local i=1
+    local lines=0
+    while [[ $i -lt ${#TARGETS[@]} ]]; do
+	CMD+=" -o -name '${TARGETS[i]}'"
+	(( ++i ))
+    done; CMD+=" \)"
+    files=($(eval "$CMD"))
+    [[ -n $VERBOSE ]] && echo "Command: $CMD -delete";
+    eval "$CMD -delete"
+    case "${#files[@]}" in
+	0)	echo "Nothing to delete" ;;
+	1)	echo "${#files[@]} file has been deleted:" ;;
+	*)	echo "${#files[@]} files have been deleted:" ;;
+    esac
+    for file in "${files[@]}"; do
+	echo "- $file"
+    done
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+	"-o")	TARGETS+=("*.o") ;;
+	"-v")	VERBOSE=1 ;;
+	"-h")	usage; exit 0;;
+	*)	echo "Unrecognized option: $1"; exit 1;;
+    esac
+    shift
+done
+
+f_mr_clean
